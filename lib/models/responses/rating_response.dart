@@ -29,7 +29,7 @@ final class RatingResponse {
 
   factory RatingResponse.fromMap(Map<String, dynamic> map) {
     return RatingResponse(
-      rate: map['rate'] != null ? map['rate'] as double : null,
+      rate: map['rate'] != null ? double.tryParse(map['rate'].toString()) : null,
       count: map['count'] != null ? map['count'] as int : null,
     );
   }

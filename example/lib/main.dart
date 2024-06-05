@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_challenge_gryffindor_fase_3/flutter_challenge_gryffindor_fase_3.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,31 +13,41 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Fase 3',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  final ProductsRepository productsRepository = ProductsRepositoryImpl();
+  final UsersRepository usersRepository = UsersRepositoryImpl();
+  final CategoriesRepository categoriesRepository = CategoriesRepositoryImpl();
 
-  final String title;
+  MyHomePage({
+    super.key,
+  });
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  bool isLoading = false;
+  List<Map<String, String>> data = [];
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _onItemTapped(_selectedIndex);
     });
   }
 
@@ -43,27 +55,149 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('Reto Flutter Fase 3'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      body: _buildList(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopify),
+            label: 'Productos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Categorias',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Usuarios',
+          ),
+        ],
+        currentIndex: _selectedIndex, //New
+        onTap: _onItemTapped,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+
+  Future _onItemTapped(int index) async {
+    setState(() {
+      _selectedIndex = index;
+      isLoading = true;
+    });
+
+    List<AsyncCallback> actions = [
+      _loadProducts,
+      _loadCategories,
+      _loadUsers,
+    ];
+
+    actions[index]();
+  }
+
+  Future _loadProducts() async {
+    final products = await widget.productsRepository.get(
+      criteria: [
+        const LimitCriteria(limit: 10),
+      ],
+    );
+
+    products.fold(
+      (error) {
+        _updateState([]);
+      },
+      (products) {
+        final newData = products
+            .map(
+              (e) => {"title": e.title ?? "", "subtitle": e.price.toString()},
+            )
+            .toList();
+
+        _updateState(newData);
+      },
+    );
+  }
+
+  Future _loadCategories() async {
+    final categories = await widget.categoriesRepository.get();
+
+    categories.fold(
+      (_) {
+        _updateState([]);
+      },
+      (categories) {
+        final newData = categories.data
+            .map(
+              (e) => {"title": e, "subtitle": ""},
+            )
+            .toList();
+
+        _updateState(newData);
+      },
+    );
+  }
+
+  Future _loadUsers() async {
+    final users = await widget.usersRepository.get();
+
+    users.fold(
+      (_) {
+        _updateState([]);
+      },
+      (users) {
+        final newData = users
+            .map(
+              (e) => {"title": e.name?.firstName ?? "", "subtitle": e.email ?? ""},
+            )
+            .toList();
+
+        _updateState(newData);
+      },
+    );
+  }
+
+  void _updateState(List<Map<String, String>> newData) {
+    setState(() {
+      isLoading = false;
+      data = newData;
+    });
+  }
+
+  Widget _buildList() {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (data.isEmpty) {
+      return _buildButton();
+    }
+
+    return Expanded(
+      child: ListView.builder(
+        itemCount: data.length,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (builderContext, index) {
+          Map item = data[index];
+
+          return ListTile(
+            title: Text(
+              item["title"] ?? "",
+            ),
+            subtitle: Text(item['subtitle']),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildButton() {
+    return Center(
+      child: IconButton(
+        icon: const Icon(Icons.download),
+        onPressed: () async {
+          await _onItemTapped(_selectedIndex);
+        },
       ),
     );
   }
