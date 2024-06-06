@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  // Comencemos por instanciar los tres repositorios principales de nuestro paquete.
   final ProductsRepository productsRepository = ProductsRepositoryImpl();
   final UsersRepository usersRepository = UsersRepositoryImpl();
   final CategoriesRepository categoriesRepository = CategoriesRepositoryImpl();
@@ -51,13 +52,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  /// Ahora, creamos una barra de navegación inferior y creamos 3 pantallas,
+  /// donde cada una es la encargada de usar uno de los repos anteriormente definidos.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reto Flutter Fase 3'),
       ),
-      body: _buildList(),
+      body: Column(
+        children: [
+          _buildList(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -79,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Esta función nos servira para ejecutar una acción diferente cada que cambiemos de patalla.
   Future _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
@@ -94,13 +102,21 @@ class _MyHomePageState extends State<MyHomePage> {
     actions[index]();
   }
 
+  /// Con esta función podemos cargar una lista de productos desde la api de FakeStore.
   Future _loadProducts() async {
+    /// Vamos a usar la función [get] de [productsRepository]
+    /// Esta función nos traera todo el listado de productos disponibles.
+    ///
+    /// Para que el ejemplo sea más rápido vamos a usar un criterio de limite para que la consulta solo traiga 10 productos.
     final products = await widget.productsRepository.get(
       criteria: [
         const LimitCriteria(limit: 10),
       ],
     );
 
+    /// Luego de esto obtendremos el resultado de nuestra consulta en un dato tipo Either
+    /// En este el elemento izquierdo represeta un error y el elemento derecho representa la data obtenida.
+    /// Para este ejemplo realizaremos un mapeo de la data para obtener solo los datos necesarios.
     products.fold(
       (error) {
         _updateState([]);
@@ -117,9 +133,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Con esta función podemos cargar una lista de categorias desde la api de FakeStore.
   Future _loadCategories() async {
+    /// Vamos a usar la función [get] de [categoriesRepository]
+    /// Esta función nos traera todo el listado de categorias disponibles.
     final categories = await widget.categoriesRepository.get();
 
+    /// Luego de esto obtendremos el resultado de nuestra consulta en un dato tipo Either
+    /// En este el elemento izquierdo represeta un error y el elemento derecho representa la data obtenida.
+    /// Para este ejemplo realizaremos un mapeo de la data para obtener solo los datos necesarios.
     categories.fold(
       (_) {
         _updateState([]);
@@ -136,9 +158,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Con esta función podemos cargar una lista de categorias desde la api de FakeStore.
   Future _loadUsers() async {
+    /// Vamos a usar la función [get] de [usersRepository]
+    /// Esta función nos traera todo el listado de usuarios disponibles.
     final users = await widget.usersRepository.get();
 
+    /// Luego de esto obtendremos el resultado de nuestra consulta en un dato tipo Either
+    /// En este el elemento izquierdo represeta un error y el elemento derecho representa la data obtenida.
+    /// Para este ejemplo realizaremos un mapeo de la data para obtener solo los datos necesarios.
     users.fold(
       (_) {
         _updateState([]);
@@ -155,6 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Esta es la función que nos permitirá asignar la nueva data para que corresponda con la pantalla seleccionada.
   void _updateState(List<Map<String, String>> newData) {
     setState(() {
       isLoading = false;
