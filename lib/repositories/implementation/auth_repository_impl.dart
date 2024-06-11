@@ -10,6 +10,8 @@ import '../auth_repository.dart';
 import '../base/base_repository.dart';
 
 final class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
+  const AuthRepositoryImpl() : super();
+
   @override
   Future<Either<DataError, LoginResponse>> login({
     required LoginRequest request,

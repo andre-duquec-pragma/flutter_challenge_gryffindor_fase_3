@@ -10,9 +10,8 @@ import '../../utils/search_criteria/search_criteria_builder.dart';
 
 class BaseRepository {
   final SearchCriteriaBuilder _searchCriteriaBuilder;
-  final client = Client();
 
-  BaseRepository({SearchCriteriaBuilder searchCriteriaBuilder = const SearchCriteriaBuilderImpl()})
+  const BaseRepository({SearchCriteriaBuilder searchCriteriaBuilder = const SearchCriteriaBuilderImpl()})
       : _searchCriteriaBuilder = searchCriteriaBuilder;
 
   /// To perform a get request to store api.
@@ -36,12 +35,12 @@ class BaseRepository {
         path: "$baseUrl$path",
       );
 
-      Response response = await client.get(Uri.parse(endpoint));
+      Response response = await Client().get(Uri.parse(endpoint));
       final mappedResponse = mapper(response.body);
 
       return Right(mappedResponse);
     } catch (e) {
-      return Left(GenericDataError(message: e.toString()));
+      return Left(DataError(message: e.toString()));
     }
   }
 
@@ -59,13 +58,13 @@ class BaseRepository {
       final baseUrl = Endpoints.base.value;
       final endpoint = "$baseUrl$path";
 
-      Response? response = await client.post(Uri.parse(endpoint), body: requestBody);
+      Response? response = await Client().post(Uri.parse(endpoint), body: requestBody);
 
       final mappedResponse = mapper(response.body);
 
       return Right(mappedResponse);
     } catch (e) {
-      return Left(GenericDataError(message: e.toString()));
+      return Left(DataError(message: e.toString()));
     }
   }
 }

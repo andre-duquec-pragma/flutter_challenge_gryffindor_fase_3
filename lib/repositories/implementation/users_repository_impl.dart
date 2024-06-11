@@ -10,6 +10,8 @@ import '../base/base_repository.dart';
 import '../users_repository.dart';
 
 final class UsersRepositoryImpl extends BaseRepository implements UsersRepository {
+  const UsersRepositoryImpl() : super();
+
   @override
   Future<Either<DataError, List<UserResponse>>> get({
     Criteria? criteria,

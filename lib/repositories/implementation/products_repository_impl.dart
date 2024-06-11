@@ -11,6 +11,8 @@ import '../base/base_repository.dart';
 import '../products_repository.dart';
 
 final class ProductsRepositoryImpl extends BaseRepository implements ProductsRepository {
+  const ProductsRepositoryImpl() : super();
+
   @override
   Future<Either<DataError, List<ProductResponse>>> get({
     Criteria? criteria,

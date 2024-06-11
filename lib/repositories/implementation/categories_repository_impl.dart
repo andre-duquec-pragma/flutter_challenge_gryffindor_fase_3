@@ -9,6 +9,8 @@ import '../base/base_repository.dart';
 import '../categories_repository.dart';
 
 final class CategoriesRepositoryImpl extends BaseRepository implements CategoriesRepository {
+  const CategoriesRepositoryImpl() : super();
+
   @override
   Future<Either<DataError, CategoriesResponse>> get() async {
     return await getRequest(
