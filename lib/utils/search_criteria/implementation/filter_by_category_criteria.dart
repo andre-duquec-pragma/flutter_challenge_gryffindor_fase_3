@@ -8,6 +8,9 @@ final class FilterByCategoryCriteria implements FilterCriteria {
     required this.category,
   });
 
+  /// Returns a filter as a path parameter for a http request.
+  ///
+  /// This filter corresponds to a specific category for a products related request.
   @override
   String get() => "/category/$category";
 }

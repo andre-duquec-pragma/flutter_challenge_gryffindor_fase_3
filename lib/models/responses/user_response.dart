@@ -12,7 +12,6 @@ final class UserResponse {
   String? password;
   NameResponse? name;
   String? phone;
-  int? iV;
 
   UserResponse({
     this.address,
@@ -22,7 +21,6 @@ final class UserResponse {
     this.password,
     this.name,
     this.phone,
-    this.iV,
   });
 
   UserResponse copyWith({
@@ -33,7 +31,6 @@ final class UserResponse {
     String? password,
     NameResponse? name,
     String? phone,
-    int? iV,
   }) {
     return UserResponse(
       address: address ?? this.address,
@@ -43,7 +40,6 @@ final class UserResponse {
       password: password ?? this.password,
       name: name ?? this.name,
       phone: phone ?? this.phone,
-      iV: iV ?? this.iV,
     );
   }
 
@@ -56,7 +52,6 @@ final class UserResponse {
       'password': password,
       'name': name?.toMap(),
       'phone': phone,
-      'iV': iV,
     };
   }
 
@@ -69,7 +64,6 @@ final class UserResponse {
       password: map['password'] != null ? map['password'] as String : null,
       name: map['name'] != null ? NameResponse.fromMap(map['name'] as Map<String, dynamic>) : null,
       phone: map['phone'] != null ? map['phone'] as String : null,
-      iV: map['iV'] != null ? map['iV'] as int : null,
     );
   }
 
@@ -79,7 +73,7 @@ final class UserResponse {
 
   @override
   String toString() {
-    return 'UserResponse(address: $address, id: $id, email: $email, username: $username, password: $password, name: $name, phone: $phone, iV: $iV)';
+    return 'UserResponse(address: $address, id: $id, email: $email, username: $username, password: $password, name: $name, phone: $phone)';
   }
 
   @override
@@ -92,8 +86,7 @@ final class UserResponse {
         other.username == username &&
         other.password == password &&
         other.name == name &&
-        other.phone == phone &&
-        other.iV == iV;
+        other.phone == phone;
   }
 
   @override
@@ -104,7 +97,6 @@ final class UserResponse {
         username.hashCode ^
         password.hashCode ^
         name.hashCode ^
-        phone.hashCode ^
-        iV.hashCode;
+        phone.hashCode;
   }
 }

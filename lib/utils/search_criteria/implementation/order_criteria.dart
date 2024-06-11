@@ -8,6 +8,10 @@ final class OrderCriteria implements SearchCriteria {
     required this.order,
   });
 
+  /// Returns a search criteria as a query parameter for a http request.
+  ///
+  /// This query parameter corresponds to a sort for elements in 200 responses.
+  /// It could be asc or desc.
   @override
   String get() => "sort=${order.value}";
 }
